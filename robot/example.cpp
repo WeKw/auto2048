@@ -1,5 +1,6 @@
 namespace AI {
 
+#include "api.hpp"
 /*
  * the main function to make step on 2048
  * the array data is the numbers on 2048
