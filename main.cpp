@@ -1,8 +1,12 @@
-#include <iostream>
-#include <vector>
-#include <random>
-#include <chrono>
 #include <conio.h>
+
+#include <chrono>
+#include <iostream>
+#include <random>
+#include <vector>
+#ifdef _WIN64
+#include <windows.h>
+#endif
 /* up: 0 72
  * right: 0 77
  * down: 0 80
@@ -10,27 +14,41 @@
  */
 int getchange() {
     int ch;
-    while (ch = _getch(), 1) {
-        if (ch) continue;
+    while (1) {
         ch = _getch();
-        switch (ch) {
-            case 72:
+        if (ch == 0 || ch == 224) {
+            ch = _getch();
+            if (ch == 72) {
                 return 0;
-            case 77:
+            } else if (ch == 77) {
                 return 1;
-            case 80:
+            } else if (ch == 80) {
                 return 2;
-            case 75:
+            } else if (ch == 75) {
                 return 3;
+            }
+        } else {
+            return ch;
         }
     }
+    return 0;
 }
 int score;
 int data[4][4], tmp[4][4];
+#ifdef _WIN64
+HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
+#endif
 std::mt19937 rand_num;
 void clear() {
 #ifdef _WIN64
-    system("cls");
+    COORD coord;
+    coord.X = 0;
+    coord.Y = 0;
+    SetConsoleCursorPosition(hout, coord);
+    for (int i = 0; i < 17; ++i) {
+        std::cout << "\t\t\t\t" << std::endl;
+    }
+    SetConsoleCursorPosition(hout, coord);
 #else
     system("clear");
 #endif
@@ -93,9 +111,9 @@ void solve(int x, int data[4][4], int &score) {
         for (int i = 0; i < 4; ++i) {
             for (int j = 2; ~j; --j) {
                 if (data[i][j] && data[i][j] == data[i][j + 1]) {
-                    ++data[i][j];
-                    score += 1 << data[i][j];
-                    data[i][j + 1] = 0;
+                    ++data[i][j + 1];
+                    score += 1 << data[i][j + 1];
+                    data[i][j] = 0;
                 }
             }
         }
@@ -115,9 +133,9 @@ void solve(int x, int data[4][4], int &score) {
         for (int j = 0; j < 4; ++j) {
             for (int i = 2; ~i; --i) {
                 if (data[i][j] && data[i][j] == data[i + 1][j]) {
-                    ++data[i][j];
-                    score += 1 << data[i][j];
-                    data[i + 1][j] = 0;
+                    ++data[i + 1][j];
+                    score += 1 << data[i + 1][j];
+                    data[i][j] = 0;
                 }
             }
         }
@@ -197,19 +215,97 @@ int step(int x, int data[4][4]) {
     }
     return score;
 }
-int main() {
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    rand_num = std::mt19937(seed);
+void start();
+void returnmenu() {
+    int now = 1;
+    while (1) {
+        clear();
+        std::cout << "       Game Over!       " << std::endl;
+        std::cout << "                        " << std::endl;
+        std::cout << "       score: " << score << std::endl;
+        std::cout << "                        " << std::endl;
+        if (now == 1) {
+            std::cout << "    > restart game <    " << std::endl;
+        } else {
+            std::cout << "      restart game      " << std::endl;
+        }
+        std::cout << "                        " << std::endl;
+        if (now == 2) {
+            std::cout << "        > menu <        " << std::endl;
+        } else {
+            std::cout << "          menu          " << std::endl;
+        }
+        std::cout << "                        " << std::endl;
+        int c = getchange();
+        if (c == 0) {
+            now = now + (now == 1) - 1;
+        } else if (c == 2) {
+            now = now - (now == 2) + 1;
+        } else if (c == 13) {
+            if (now == 1) start();
+            break;
+        }
+    }
+}
+void start() {
+    memset(data, 0, sizeof(data));
+    score = 0;
     random();
     random();
     print();
-    while (step(getchange()), 1) {
+    while (1) {
+        int c = getchange();
+        if (c == 27) return;
+        if (c < 4) step(c);
         print();
         if (!test()) {
             clear();
-            std::cout << "Game over!" << std::endl;
-            return 0;
+            returnmenu();
+            return;
         }
     }
+}
+void mainmenu() {
+    int now = 1;
+    while (1) {
+        clear();
+        std::cout << "        auto2048        " << std::endl;
+        std::cout << "                        " << std::endl;
+        if (now == 1) {
+            std::cout << "     > start game <     " << std::endl;
+        } else {
+            std::cout << "       start game       " << std::endl;
+        }
+        std::cout << "                        " << std::endl;
+        if (now == 2) {
+            std::cout << "        > quit <        " << std::endl;
+        } else {
+            std::cout << "          quit          " << std::endl;
+        }
+        std::cout << "                        " << std::endl;
+        int c = getchange();
+        if (c == 0) {
+            now = now + (now == 1) - 1;
+        } else if (c == 2) {
+            now = now - (now == 2) + 1;
+        } else if (c == 13) {
+            if (now == 1) {
+                start();
+            } else {
+                clear();
+                break;
+            }
+        }
+    }
+}
+int main() {
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    rand_num = std::mt19937(seed);
+#ifdef _WIN64
+    system("cls");
+#else
+    clear();
+#endif
+    mainmenu();
     return 0;
 }
