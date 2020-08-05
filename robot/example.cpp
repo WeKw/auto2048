@@ -1,5 +1,3 @@
-namespace AI {
-
 #include "api.hpp"
 /*
  * the main function to make step on 2048
@@ -12,5 +10,3 @@ namespace AI {
  * 3: left
  */
 int solve(int data[4][4]) { /* some code */ }
-
-}  // namespace AI

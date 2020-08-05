@@ -7,6 +7,8 @@
 #ifdef _WIN64
 #include <windows.h>
 #endif
+
+#include "robot/skcAI1.cpp"
 /* up: 0 72
  * right: 0 77
  * down: 0 80
@@ -37,6 +39,7 @@ int score;
 int data[4][4], tmp[4][4];
 #ifdef _WIN64
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
+CONSOLE_CURSOR_INFO cursor_info = {1, 0}; 
 #endif
 std::mt19937 rand_num;
 void clear() {
@@ -46,7 +49,7 @@ void clear() {
     coord.Y = 0;
     SetConsoleCursorPosition(hout, coord);
     for (int i = 0; i < 17; ++i) {
-        std::cout << "\t\t\t\t" << std::endl;
+        std::cout << "                             " << std::endl;
     }
     SetConsoleCursorPosition(hout, coord);
 #else
@@ -216,7 +219,8 @@ int step(int x, int data[4][4]) {
     return score;
 }
 void start();
-void returnmenu() {
+void robotstart();
+void returnmenu(int x) {
     int now = 1;
     while (1) {
         clear();
@@ -242,7 +246,13 @@ void returnmenu() {
         } else if (c == 2) {
             now = now - (now == 2) + 1;
         } else if (c == 13) {
-            if (now == 1) start();
+            if (now == 1) {
+                if (x == 0) {
+                    start();
+                } else {
+                    robotstart();
+                }
+            }
             break;
         }
     }
@@ -260,7 +270,29 @@ void start() {
         print();
         if (!test()) {
             clear();
-            returnmenu();
+            returnmenu(0);
+            return;
+        }
+    }
+}
+void robotstart() {
+    memset(data, 0, sizeof(data));
+    score = 0;
+    random();
+    random();
+    print();
+    while (1) {
+        int c = solve(data);
+        step(c);
+        print();
+#ifdef _WIN64
+        Sleep(200);
+#else
+        usleep(200000);
+#endif
+        if (!test()) {
+            clear();
+            returnmenu(1);
             return;
         }
     }
@@ -278,6 +310,12 @@ void mainmenu() {
         }
         std::cout << "                        " << std::endl;
         if (now == 2) {
+            std::cout << "     > robot play <     " << std::endl;
+        } else {
+            std::cout << "       robot play       " << std::endl;
+        }
+        std::cout << "                        " << std::endl;
+        if (now == 3) {
             std::cout << "        > quit <        " << std::endl;
         } else {
             std::cout << "          quit          " << std::endl;
@@ -287,10 +325,12 @@ void mainmenu() {
         if (c == 0) {
             now = now + (now == 1) - 1;
         } else if (c == 2) {
-            now = now - (now == 2) + 1;
+            now = now - (now == 3) + 1;
         } else if (c == 13) {
             if (now == 1) {
                 start();
+            } else if (now == 2) {
+                robotstart();
             } else {
                 clear();
                 break;
@@ -306,6 +346,7 @@ int main() {
 #else
     clear();
 #endif
+    SetConsoleCursorInfo(hout, &cursor_info);
     mainmenu();
     return 0;
 }
