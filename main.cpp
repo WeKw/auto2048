@@ -39,7 +39,8 @@ void print() {
     clear();
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
-            std::cout << (data[i][j] ? 1 << data[i][j] : 0) << "\t";
+            if (data[i][j]) std::cout << (1 << data[i][j]);
+            std::cout << "\t";
         }
         std::cout << std::endl << std::endl << std::endl;
     }
