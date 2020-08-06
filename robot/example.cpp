@@ -1,4 +1,6 @@
 #include "api.hpp"
+namespace robotname {
+
 /*
  * the main function to make step on 2048
  * the array data is the numbers on 2048
@@ -10,3 +12,5 @@
  * 3: left
  */
 int solve(int data[4][4]) { /* some code */ }
+
+}  // namespace robotname

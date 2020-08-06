@@ -39,7 +39,7 @@ int score;
 int data[4][4], tmp[4][4];
 #ifdef _WIN64
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
-CONSOLE_CURSOR_INFO cursor_info = {1, 0}; 
+CONSOLE_CURSOR_INFO cursor_info = {1, 0};
 #endif
 std::mt19937 rand_num;
 void clear() {
@@ -219,7 +219,8 @@ int step(int x, int data[4][4]) {
     return score;
 }
 void start();
-void robotstart();
+void chooserobot();
+void robotstart(int x);
 void returnmenu(int x) {
     int now = 1;
     while (1) {
@@ -250,7 +251,7 @@ void returnmenu(int x) {
                 if (x == 0) {
                     start();
                 } else {
-                    robotstart();
+                    chooserobot();
                 }
             }
             break;
@@ -275,14 +276,49 @@ void start() {
         }
     }
 }
-void robotstart() {
+int robotnumber = 1;
+decltype(skcAI1::solve) *solves[] = {skcAI1::solve};
+std::string names[] = {"skcAI1"};
+void chooserobot() {
+    int now = 0;
+    while (1) {
+        clear();
+        std::cout << "      Choose Robot      " << std::endl;
+        std::cout << "                        " << std::endl;
+        for (int i = 0; i < robotnumber; ++i) {
+            if (now == i) {
+                std::cout << "      > " << names[i] << " <" << std::endl;
+            } else {
+                std::cout << "        " << names[i] << std::endl;
+            }
+            std::cout << "                        " << std::endl;
+        }
+        if (now == robotnumber) {
+            std::cout << "     > main menu <      " << std::endl;
+        } else {
+            std::cout << "       main menu        " << std::endl;
+        }
+        int c = getchange();
+        if (c == 0) {
+            now = now + (now == 0) - 1;
+        } else if (c == 2) {
+            now = now - (now == robotnumber) + 1;
+        } else if (c == 13) {
+            if (now < robotnumber) {
+                robotstart(now);
+            }
+            break;
+        }
+    }
+}
+void robotstart(int x) {
     memset(data, 0, sizeof(data));
     score = 0;
     random();
     random();
     print();
     while (1) {
-        int c = solve(data);
+        int c = solves[x](data);
         step(c);
         print();
 #ifdef _WIN64
@@ -330,7 +366,7 @@ void mainmenu() {
             if (now == 1) {
                 start();
             } else if (now == 2) {
-                robotstart();
+                chooserobot();
             } else {
                 clear();
                 break;
@@ -343,10 +379,14 @@ int main() {
     rand_num = std::mt19937(seed);
 #ifdef _WIN64
     system("cls");
+    SetConsoleCursorInfo(hout, &cursor_info);
 #else
     clear();
 #endif
-    SetConsoleCursorInfo(hout, &cursor_info);
     mainmenu();
+#ifdef _WIN64
+    cursor_info = {1, 1};
+    SetConsoleCursorInfo(hout, &cursor_info);
+#endif
     return 0;
 }

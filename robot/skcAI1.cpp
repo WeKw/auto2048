@@ -1,4 +1,6 @@
 #include "api.hpp"
+namespace skcAI1 {
+
 int cnt = 0;
 int solve(int data[4][4]) {
     int temp;
@@ -16,3 +18,5 @@ int solve(int data[4][4]) {
     cnt++;
     return temp;
 }
+
+}  // namespace skcAI1
