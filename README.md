@@ -6,7 +6,7 @@ A 2048 game with robot playing
 
 ## [v0.2.2](https://github.com/WeKw/auto2048/releases/tag/v0.2.2): Add a robot player
 
-Add a robot player named `keyAI1` powered by @keywet06
+Add a robot player named `keyAI1` powered by [@keywet06](https://github.com/keywet06) .
 
 Its score is up to 5760.
 
@@ -16,7 +16,7 @@ You can choose robot for playing.
 
 ## [v0.2.0](https://github.com/WeKw/auto2048/releases/tag/v0.2.0): Add robot player
 
-Add a AI player named `skcAI1` powered by @realskc
+Add a AI player named `skcAI1` powered by [@realskc](https://github.com/keywet06) .
 
 ## [v0.1.0](https://github.com/WeKw/auto2048/releases/tag/v0.1.0): Auto2048 published
 
