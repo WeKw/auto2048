@@ -8,7 +8,6 @@
 #include <windows.h>
 #endif
 
-#include "robot/skcAI1.cpp"
 /* up: 0 72
  * right: 0 77
  * down: 0 80
@@ -276,9 +275,11 @@ void start() {
         }
     }
 }
-int robotnumber = 1;
-decltype(skcAI1::solve) *solves[] = {skcAI1::solve};
-std::string names[] = {"skcAI1"};
+#include "robot/skcAI1.cpp"
+#include "robot/keyAI1.cpp"
+int robotnumber = 2;
+decltype(skcAI1::solve) *solves[] = {skcAI1::solve, keyAI1::solve};
+std::string names[] = {"skcAI1", "keyAI1"};
 void chooserobot() {
     int now = 0;
     while (1) {
